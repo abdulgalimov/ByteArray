@@ -51,6 +51,11 @@ var ByteArray = (function() {
     return a;
   };
 
+  ByteArray.prototype.setPosition = function(value) {
+    this._position = value;
+    return this;
+  };
+
   ByteArray.prototype.getInt8 = function() {
     var value = this._data.getInt8(this._position);
     this._position++;
@@ -64,10 +69,12 @@ var ByteArray = (function() {
   ByteArray.prototype.setInt8 = function(value) {
     this._data.setInt8(this._position, value);
     this._position++;
+    return this;
   };
   ByteArray.prototype.setUint8 = function(value) {
     this._data.setUint8(this._position, value);
     this._position++;
+    return this;
   };
 
   ByteArray.prototype.getInt16 = function() {
@@ -83,10 +90,12 @@ var ByteArray = (function() {
   ByteArray.prototype.setInt16 = function(value) {
     this._data.setInt16(this._position, value, this._littleEndian);
     this._position += 2;
+    return this;
   };
   ByteArray.prototype.setUint16 = function(value) {
     this._data.setUint16(this._position, value, this._littleEndian);
     this._position += 2;
+    return this;
   };
 
   ByteArray.prototype.getInt32 = function() {
@@ -102,10 +111,12 @@ var ByteArray = (function() {
   ByteArray.prototype.setInt32 = function(value) {
     this._data.setInt32(this._position, value, this._littleEndian);
     this._position += 4;
+    return this;
   };
   ByteArray.prototype.setUint32 = function(value) {
     this._data.setUint32(this._position, value, this._littleEndian);
     this._position += 4;
+    return this;
   };
 
   ByteArray.prototype.getFloat32 = function() {
@@ -116,6 +127,7 @@ var ByteArray = (function() {
   ByteArray.prototype.setFloat32 = function(value) {
     this._data.setFloat32(this._position, value, this._littleEndian);
     this._position += 4;
+    return this;
   };
 
   ByteArray.prototype.getFloat64 = function() {
@@ -126,6 +138,7 @@ var ByteArray = (function() {
   ByteArray.prototype.setFloat64 = function(value) {
     this._data.setFloat64(this._position, value, this._littleEndian);
     this._position += 8;
+    return this;
   };
 
   ByteArray.prototype.readBytes = function(byteLength) {
@@ -134,17 +147,17 @@ var ByteArray = (function() {
     this._position += byteLength;
     return bytes;
   };
-  ByteArray.prototype.writeBytes = function(bytes) {
-    var len = bytes.byteLength||bytes.length;
+  ByteArray.prototype.writeBytes = function(source) {
+    if (source instanceof ArrayBuffer || source instanceof Array) {
+      source = new Uint8Array(source);
+    } else if (source instanceof ByteArray) {
+      source = new Uint8Array(source.buffer);
+    }
+    var len = source.byteLength||source.length;
     for (var i=0; i<len; i++) {
-      this.setUint8(bytes[i]);
+      this.setUint8(source[i]);
     }
-  };
-  ByteArray.prototype.writeBuffer = function(buffer) {
-    var bytes = new Uint8Array(buffer);
-    for (var i=0; i<bytes.byteLength; i++) {
-      this.setUint8(bytes[i]);
-    }
+    return this;
   };
 
 
@@ -158,6 +171,7 @@ var ByteArray = (function() {
     for (var i=0; i<string.length; i++) {
       this.setInt8(string.charCodeAt(i));
     }
+    return this;
   };
 
 
@@ -176,6 +190,7 @@ var ByteArray = (function() {
     for (var i=0; i<string.length; i++) {
       this.setUint16(string.charCodeAt(i));
     }
+    return this;
   };
 
   ByteArray.prototype.writeByte = ByteArray.prototype.setInt8;
@@ -193,6 +208,10 @@ var ByteArray = (function() {
   ByteArray.prototype.writeUnsignedInt = ByteArray.prototype.setUint32;
   ByteArray.prototype.readUnsignedInt = ByteArray.prototype.getUint32;
 
-
+  try {
+    var isBrowser = this === window;
+  } catch (e) {
+    module.exports = ByteArray;
+  }
   return ByteArray;
 })();
