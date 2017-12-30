@@ -28,9 +28,8 @@ console.log('------- Read Data');
 var reader = new ByteArray(writer.buffer);
 reader.littleEndian = writer.littleEndian;
 console.log('info:', reader.length, reader.position, reader.bytesAvailable);
-//
 console.log(reader.getInt8()); // 10
-console.log(reader.getUint32()); // 7000
+console.log(reader.getUint32()); // 70000
 console.log(reader.readUTF8Text(utf8Text.length)); // test text
 console.log(reader.readUTF16Text(cyrillicText.length)); // кирилица
 console.log(reader.readUTF16Text(emojiText.length)); // 👍😀🇷🇺
